@@ -49,17 +49,29 @@ function url_seed(url2scrap) {
 			$('a').each(function(){
 				//console.log($(this).attr('href'));
 				link = {'url': $(this).attr('href'),'father_url':url2scrap, 'deep': depth};
-				if (depth < argv.depth) {
+				if (depth < argv.depth ) { // TODO add a condition to check if the url is already in the links array to avoid infinit recursive loops
 					depth++;
 					url_seed(link.url);
 				} 
 				links.push(link);
-				console.log(link);
+				
 			});
-			console.log(links);
+			// console.log(links);
 		} else {
 			error.error = true;
 			error.description = url2scrap + ':: ' + err.message;
+		}
+		//console.log(link);
+		var json2csv = require('json2csv');
+		var fields = ['url', 'description','father_url','deep'];
+		 
+		try {
+		  var result = json2csv({ data: links, fields: fields });
+		  console.log(result);
+		} catch (err) {
+		  // Errors are thrown for bad options, or if the data is empty and no fields are provided. 
+		  // Be sure to provide fields if it is possible that your data array will be empty. 
+		  console.error(err);
 		}
 	});
 }

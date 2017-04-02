@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/leofishman/urlcrawl/issues"
   },
-  "homepage": "https://github.com/leofishman/urlcrawl#readme"
+  "homepage": "https://github.com/leofishman/urlcrawl#readme",
+  "dependencies": {
+    "json2csv": "^3.7.3"
+  }
 }
