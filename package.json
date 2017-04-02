@@ -1,0 +1,24 @@
+{
+  "name": "urlcrawl",
+  "version": "1.0.0",
+  "description": "service that can crawl a seed URL (website) and",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leofishman/urlcrawl.git"
+  },
+  "keywords": [
+    "nodejs",
+    "webscraping"
+  ],
+  "author": "Leonardo j. Fishman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leofishman/urlcrawl/issues"
+  },
+  "homepage": "https://github.com/leofishman/urlcrawl#readme"
+}
