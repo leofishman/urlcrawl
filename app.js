@@ -1,6 +1,7 @@
 // we let the user know the app started
 console.log('starting url crawl on:');
-
+var error = {};
+error.error = false
 // in order to check validities of url, spetialy the seed
 var validUrl = require('valid-url');
 
@@ -33,6 +34,8 @@ function check_url_valid(url2check) {
     if (validUrl.isUri(url2check)){
         return true;
     } else {
+		error.error = true;
+		error.description = url2check + ' is not a valid url';
         return false;
     }
 }
@@ -42,11 +45,13 @@ if (command === 'crawl') {
 	if (check_url_valid(url2seed)) {
 		console.log('crwal started at: ' + url2seed + ' ' + argv.depth + ' levels deep');
 	} else {
-		console.log(url2seed + ' is in invalid url');
+		//console.log(url2seed + ' is in invalid url');
+		console.log(error);
 	} 
 } else {
-		console.log('command not found!');
-		console.log(command);
+		error.error = true;
+		error.description = command + ' command not found :(';		
+		console.log(error);
 }
 
 
@@ -60,6 +65,11 @@ if (check_url_valid(url2check)) {
 }
 * */
 
+ 
 // we let the user know the app finished
-console.log('thanks for using urlcrawl');
+if (!error.error) {
+	console.log('thanks for using urlcrawl');
+} else {
+	console.log('sorry, we couldn\'t crawl the url: ' +  url2seed + ' because ' + error.description);
+}
 
