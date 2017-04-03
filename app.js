@@ -56,7 +56,7 @@ function url_seed(url2scrap, urlFather, depth) {
 			keys.forEach(function(key){	
 				try {
 					if (meta[key].attribs.name === 'description') {
-					  console.log(meta[key].attribs.content);
+					 // console.log(meta[key].attribs.content);
 					  description = meta[key].attribs.content;
 					}
 				}
@@ -72,10 +72,10 @@ function url_seed(url2scrap, urlFather, depth) {
 				var next_link = $(this).attr('href');
 				//link = {'url': $(this).attr('href'),'father_url':url2scrap, 'deep': depth};
 				
-				if (depth <= argv.depth ) { // TODO add a condition to check if the url is already in the links array to avoid infinit recursive loops
+				if (depth < argv.depth && check_url_valid(next_link)) { // TODO add a condition to check if the url is already in the links array to avoid infinit recursive loops
 					depth++;
-					console.log(next_link + urlFather + depth);
-					url_seed(next_link, urlFather,depth);
+					//console.log(next_link + urlFather + depth);
+					url_seed(next_link, url2scrap,depth);
 				} 
 			});
 			// console.log(links);
@@ -111,7 +111,7 @@ if (!error.error) {
 	setTimeout(function() {
 		print_csv();
 		console.log('thanks for using urlcrawl');
-		}, 6000);
+		}, 18000);
 	//console.log(links);
 	//console.log(link);
 
