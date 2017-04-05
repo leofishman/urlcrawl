@@ -31,13 +31,14 @@ var error = {};
 error.error = false;
 
 var links = [];
+var links2scrap = [];
 var link = {};
 
 function check_url_valid(url2check) {
     if (validUrl.isUri(url2check)){
         return true;
     } else {
-		error.error = true;
+		//error.error = true;
 		error.description = url2check + ' is not a valid url';
         return false;
     }
@@ -67,21 +68,22 @@ function url_seed(url2scrap, urlFather, depth) {
 			link = {'url': url2scrap,'title':title,'description':description,'father_url':urlFather,'deep':depth};
 			links.push(link);
 			//console.log(link);
-			
+			depth++;
 			$('a').each(function(){
 				var next_link = $(this).attr('href');
 				//link = {'url': $(this).attr('href'),'father_url':url2scrap, 'deep': depth};
 				
-				if (depth < argv.depth && check_url_valid(next_link)) { // TODO add a condition to check if the url is already in the links array to avoid infinit recursive loops
-					depth++;
+				if (depth <= argv.depth && check_url_valid(next_link)) { // TODO add a condition to check if the url is already in the links array to avoid infinit recursive loops
+					
 					//console.log(next_link + urlFather + depth);
 					url_seed(next_link, url2scrap,depth);
+					links2scrap.push(next_link, url2scrap,depth);
 				} 
 			});
 			// console.log(links);
 		} else {
-			error.error = true;
-			error.description = url2scrap + ':: ' + err.message; // TODO check err message or resp.status
+			//error.error = true;
+			error.description = url2scrap + ':: '; //+ resp.statusCode.toString(); // TODO check err message or resp.status
 		}
 		//console.log(link);
 
@@ -109,11 +111,14 @@ if (command === 'crawl') {
 if (!error.error) {
 
 	setTimeout(function() {
-		print_csv();
+		
+		print_csv();//console.log(links2scrap);
 		console.log('thanks for using urlcrawl');
-		}, 18000);
+		console.log(error.description);
+		}, 38000);
 	//console.log(links);
 	//console.log(link);
+	
 
 } else {
 	console.log('sorry, we couldn\'t crawl the url: ' +  url2seed + ' because ' + error.description);
