@@ -33,6 +33,7 @@ error.error = false;
 var links = [];
 var links2scrap = [];
 var link = {};
+var exist = false;
 
 function check_url_valid(url2check) {
     if (validUrl.isUri(url2check)){
@@ -44,50 +45,67 @@ function check_url_valid(url2check) {
     }
 }
 
+function urlExist(urlCheck){
+	// I check if the url 2 is already crawled
+	exist = false
+	var urlSearch = links.filter(function ( urlSearch ) {
+		if (urlSearch.url === urlCheck) {
+			exist = true;
+		}
+	});
+	return exist;
+}
+
 function url_seed(url2scrap, urlFather, depth) {
 	//console.log(url2scrap);
-	request({url: url2scrap, encoding: 'binary'}, function(err, resp, body){
-		if(!err && resp.statusCode == 200){
-			
-			var $ = cheerio.load(body);
-			var title = $('title').text();
-			var description;
-			var meta = $('meta')
-			var keys = Object.keys(meta)
-			keys.forEach(function(key){	
-				try {
-					if (meta[key].attribs.name === 'description') {
-					 // console.log(meta[key].attribs.content);
-					  description = meta[key].attribs.content;
-					}
-				}
-				catch (e) {
-				}
-			});
-			
-			link = {'url': url2scrap,'title':title,'description':description,'father_url':urlFather,'deep':depth};
-			links.push(link);
-			//console.log(link);
-			depth++;
-			$('a').each(function(){
-				var next_link = $(this).attr('href');
-				//link = {'url': $(this).attr('href'),'father_url':url2scrap, 'deep': depth};
-				
-				if (depth <= argv.depth && check_url_valid(next_link)) { // TODO add a condition to check if the url is already in the links array to avoid infinit recursive loops
-					
-					//console.log(next_link + urlFather + depth);
-					url_seed(next_link, url2scrap,depth);
-					links2scrap.push(next_link, url2scrap,depth);
-				} 
-			});
-			// console.log(links);
-		} else {
-			//error.error = true;
-			error.description = url2scrap + ':: '; //+ resp.statusCode.toString(); // TODO check err message or resp.status
-		}
-		//console.log(link);
 
-	});
+	if (!urlExist(url2scrap)){
+		request({url: url2scrap, encoding: 'binary'}, function(err, resp, body){
+			if(!err && resp.statusCode == 200){
+				
+				var $ = cheerio.load(body);
+				var title = $('title').text();
+				var description;
+				var meta = $('meta')
+				var keys = Object.keys(meta)
+				keys.forEach(function(key){	
+					try {
+						if (meta[key].attribs.name === 'description') {
+						// console.log(meta[key].attribs.content);
+						description = meta[key].attribs.content;
+						}
+					}
+					catch (e) {
+					}
+				});
+				
+				link = {'url': url2scrap,'title':title,'description':description,'father_url':urlFather,'deep':depth};
+				if (!urlExist(url2scrap)){ 
+					links.push(link)
+				};
+				//console.log(link);
+				depth++;
+				$('a').each(function(){
+					var next_link = $(this).attr('href');
+					//link = {'url': $(this).attr('href'),'father_url':url2scrap, 'deep': depth};
+					
+					if (depth <= argv.depth && check_url_valid(next_link)) { // TODO add a condition to check if the url is already in the links array to avoid infinit recursive loops
+						
+						//console.log(next_link + urlFather + depth);
+					//	if (!urlExist(url2scrap)){url_seed(next_link, url2scrap,depth)};
+					url_seed(next_link, url2scrap,depth);
+					//	if (!urlExist(url2scrap)){links2scrap.push(next_link, url2scrap,depth)};
+					} 
+				});
+				// console.log(links);
+			} else {
+				//error.error = true;
+				error.description = url2scrap + ':: '; //+ resp.statusCode.toString(); // TODO check err message or resp.status
+			}
+			//console.log(link);
+
+		});
+	}
 }
  
 
@@ -115,7 +133,7 @@ if (!error.error) {
 		print_csv();//console.log(links2scrap);
 		console.log('thanks for using urlcrawl');
 		console.log(error.description);
-		}, 38000);
+		}, 8000);
 	//console.log(links);
 	//console.log(link);
 	
